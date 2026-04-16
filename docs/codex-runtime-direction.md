@@ -8,7 +8,7 @@
 
 - 不接受 `OPENAI_API_KEY` 带来的 API billing 成本作为默认使用路径。
 - 默认只接受 ChatGPT Pro / Codex 账号订阅额度。
-- 不把 OpenAI Agents SDK 作为主路线，因为它默认面向 OpenAI API 调用和 API 计费。
+- 不引入 OpenAI Agents SDK 路线，因为它默认面向 OpenAI API 调用和 API 计费。
 - 不重造一个低配 coding agent；优先复用 Codex 已经具备的 agent harness、工具、权限、会话和执行能力。
 
 因此，本项目应定位为 subscription-backed Codex autonomous coding quickstart，而不是 API-key-backed Agents SDK quickstart。
@@ -44,7 +44,7 @@ Runtime 优先级如下。
 
 1. `@openai/codex-sdk`
 
-   长期主线。用于以可编程方式控制 Codex agent，适合实现 thread / run / resume 形式的 agent loop。后续如果要做稳定的自主编码 harness，应优先新增 Codex SDK runtime。
+   当前一等 runtime。用于以可编程方式控制 Codex agent，适合实现 thread / run / resume 形式的 agent loop。自主编码 harness 默认应优先走 Codex SDK runtime。
 
 2. `codex exec`
 
@@ -54,30 +54,30 @@ Runtime 优先级如下。
 
    高级集成路线。适合自定义 UI、事件流、审批流、会话历史和产品化控制台。如果项目后续从 quickstart 走向完整产品界面，可以基于 app-server 做深度集成。
 
-4. `openai-agents`
+明确不支持：
 
-   可选 API 模式。仅在用户明确接受 OpenAI API Key 和 API billing 时使用，不作为默认路线，不作为当前项目的核心定位。
+- `openai-agents` / OpenAI Agents SDK。当前项目不支持 API-key-backed runtime，不暴露 `agents-sdk` 选项，也不保留相关依赖。
 
 ## 对当前 Quickstart 的影响
 
-当前 `autonomous-coding` quickstart 应逐步从“同时展示 Codex CLI 和 Agents SDK 两种 runtime”调整为“以 Codex 账号订阅能力为中心的 autonomous coding quickstart”。
+当前 `autonomous-coding` quickstart 应从“同时展示 Codex CLI 和 Agents SDK 两种 runtime”调整为“Codex SDK 一等、Codex CLI 兜底、无 Agents SDK 路线”的 autonomous coding quickstart。
 
 具体影响：
 
+- 新增并默认优先选择 `codex-sdk` runtime。
 - 保留现有 `codex-cli` runtime，作为可直接运行的兼容路径。
-- 后续优先新增 Codex SDK runtime，并把它作为长期推荐路径。
-- 降低 `agents-sdk` runtime 的默认优先级，将其标注为 API-key-backed optional mode。
+- 移除 `agents-sdk` runtime，不再暴露 API-key-backed optional mode。
 - README 和使用说明应避免暗示用户必须配置 `OPENAI_API_KEY` 才能体验主流程。
 - 项目叙事应强调“复用 Codex 产品能力”，而不是“自建 OpenAI Agents SDK sandbox agent”。
 
-## 后续实现建议
+## 当前实现要求
 
-后续实现应按以下顺序推进：
+当前实现应满足：
 
-1. 明确当前 quickstart 的默认 runtime 策略：优先 Codex 账号订阅路径，API Key 仅作为可选模式。
-2. 调研并新增 `@openai/codex-sdk` runtime，用 Codex SDK 管理 thread / run / resume。
+1. 明确当前 quickstart 的默认 runtime 策略：优先 Codex SDK，CLI 仅作为 fallback。
+2. 使用 `@openai/codex-sdk` runtime 管理 thread / run / resume。
 3. 保留 `codex exec` runtime 作为 fallback，并继续支持脚本化运行。
-4. 将 `agents-sdk` runtime 文档调整为 optional API route，避免和主路线混淆。
+4. 移除 `agents-sdk` runtime 文档和代码，避免和主路线混淆。
 5. 如果需要更强产品化能力，再评估 `codex app-server`，用于事件流、审批和自定义 UI。
 
 验收标准：

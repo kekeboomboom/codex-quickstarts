@@ -43,9 +43,7 @@ def test_normalize_project_dir_does_not_double_prefix_generations(tmp_path, monk
     assert normalized == Path("generations/foo")
 
 
-def test_parse_args_supports_help_without_openai_key(monkeypatch, capsys):
-    monkeypatch.delenv("OPENAI_API_KEY", raising=False)
-
+def test_parse_args_supports_help(capsys):
     with pytest.raises(SystemExit) as excinfo:
         autonomous_agent_demo.parse_args(["--help"])
 
@@ -62,7 +60,11 @@ def test_parse_args_defaults_match_plan():
     assert args.max_iterations is None
     assert args.model == "gpt-5.3-codex"
     assert args.reasoning_effort == "high"
-    assert args.sandbox == "local"
     assert args.runtime == "auto"
     assert args.codex_sandbox == "workspace-write"
     assert args.feature_count == 200
+
+
+def test_parse_args_rejects_agents_sdk_runtime():
+    with pytest.raises(SystemExit):
+        autonomous_agent_demo.parse_args(["--runtime", "agents-sdk"])

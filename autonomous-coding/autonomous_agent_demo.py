@@ -12,9 +12,8 @@ from agent import run_autonomous_agent
 
 
 DEFAULT_PROJECT_DIR = "autonomous_demo_project"
-REASONING_EFFORT_CHOICES = ("low", "medium", "high", "xhigh")
-SANDBOX_CHOICES = ("local", "docker")
-RUNTIME_CHOICES = ("auto", "agents-sdk", "codex-cli")
+REASONING_EFFORT_CHOICES = ("minimal", "low", "medium", "high", "xhigh")
+RUNTIME_CHOICES = ("auto", "codex-sdk", "codex-cli")
 CODEX_SANDBOX_CHOICES = ("read-only", "workspace-write", "danger-full-access")
 
 
@@ -53,22 +52,16 @@ def parse_args(argv=None):
         help="Reasoning effort to send with GPT-5 class models.",
     )
     parser.add_argument(
-        "--sandbox",
-        choices=SANDBOX_CHOICES,
-        default="local",
-        help="Agents SDK sandbox backend to use for the run.",
-    )
-    parser.add_argument(
         "--runtime",
         choices=RUNTIME_CHOICES,
         default="auto",
-        help="Runtime to use: auto, agents-sdk, or codex-cli.",
+        help="Runtime to use: auto, codex-sdk, or codex-cli.",
     )
     parser.add_argument(
         "--codex-sandbox",
         choices=CODEX_SANDBOX_CHOICES,
         default="workspace-write",
-        help="Codex CLI sandbox policy when --runtime codex-cli is selected.",
+        help="Codex sandbox policy for Codex SDK and Codex CLI runs.",
     )
     parser.add_argument(
         "--feature-count",
@@ -88,7 +81,6 @@ def main(argv=None):
         max_iterations=args.max_iterations,
         model=args.model,
         reasoning_effort=args.reasoning_effort,
-        sandbox=args.sandbox,
         runtime=args.runtime,
         codex_sandbox=args.codex_sandbox,
         feature_count=args.feature_count,
